@@ -22,10 +22,15 @@ namespace CognitiveServicesPlayground
     {
         private StorageFile currentImageFile;
         private FaceServiceClient client;
+        private DispatcherTimer trainingStatusTimer;
 
         public FacePage()
         {
             this.InitializeComponent();
+
+            trainingStatusTimer = new DispatcherTimer();
+            trainingStatusTimer.Tick += OnCheckTrainingStatus;
+            trainingStatusTimer.Interval = TimeSpan.FromSeconds(1);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -330,18 +335,25 @@ namespace CognitiveServicesPlayground
             {
                 IsBusy = true;
                 await client.TrainPersonGroupAsync(SelectedPersonGroup.PersonGroupId);
-                try
-                {
-                    SelectedPersonGroupTrainingStatus = await client.GetPersonGroupTrainingStatusAsync(SelectedPersonGroup.PersonGroupId);
-                }
-                catch (FaceAPIException ex)
-                {
-                    await new MessageDialog(ex.ErrorMessage, "Train person group").ShowAsync();
-                }
+                SelectedPersonGroupTrainingStatus = await client.GetPersonGroupTrainingStatusAsync(SelectedPersonGroup.PersonGroupId);
+                trainingStatusTimer.Start();
+            }
+            catch (FaceAPIException ex)
+            {
+                await new MessageDialog(ex.ErrorMessage, "Train person group").ShowAsync();
             }
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        private async void OnCheckTrainingStatus(object sender, object e)
+        {
+            SelectedPersonGroupTrainingStatus = await client.GetPersonGroupTrainingStatusAsync(SelectedPersonGroup.PersonGroupId);
+            if (SelectedPersonGroupTrainingStatus == null || SelectedPersonGroupTrainingStatus.Status != Status.Running)
+            {
+                trainingStatusTimer.Stop();
             }
         }
 
@@ -352,14 +364,11 @@ namespace CognitiveServicesPlayground
                 IsBusy = true;
                 SelectedPersonGroup = await client.GetPersonGroupAsync(personGroupId);
                 SelectedPersonGroupPersons = await client.ListPersonsAsync(personGroupId);
-                try
-                {
-                    SelectedPersonGroupTrainingStatus = await client.GetPersonGroupTrainingStatusAsync(personGroupId);
-                }
-                catch (FaceAPIException ex)
-                {
-                    await new MessageDialog(ex.ErrorMessage, "Get person group").ShowAsync();
-                }
+                SelectedPersonGroupTrainingStatus = await client.GetPersonGroupTrainingStatusAsync(personGroupId);
+            }
+            catch (FaceAPIException ex)
+            {
+                await new MessageDialog(ex.ErrorMessage, "Get person group").ShowAsync();
             }
             finally
             {
