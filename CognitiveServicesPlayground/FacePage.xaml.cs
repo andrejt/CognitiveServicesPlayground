@@ -33,19 +33,11 @@ namespace CognitiveServicesPlayground
             trainingStatusTimer.Interval = TimeSpan.FromSeconds(1);
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        public async Task<bool> InitializeServiceAsync(FaceServiceClient client)
         {
-            MicrosoftCognitiveServicesFaceKey = await LoadKeyAsync();
-            await InitializeServiceAsync();
-        }
-
-        private async Task InitializeServiceAsync()
-        {
-            if (!String.IsNullOrEmpty(MicrosoftCognitiveServicesFaceKey))
-            {
-                client = new FaceServiceClient(MicrosoftCognitiveServicesFaceKey, "https://westeurope.api.cognitive.microsoft.com/face/v1.0");
-                await GetPersonGroupsAsync();
-            }
+            this.client = client;
+            await GetPersonGroupsAsync();
+            return PersonGroups != null;
         }
 
         private PersonGroup[] personGroups;
@@ -55,12 +47,6 @@ namespace CognitiveServicesPlayground
             set => SetProperty(ref personGroups, value);
         }
 
-        private string microsoftCognitiveServicesFaceKey;
-        public string MicrosoftCognitiveServicesFaceKey
-        {
-            get => microsoftCognitiveServicesFaceKey;
-            set => SetProperty(ref microsoftCognitiveServicesFaceKey, value);
-        }
 
         private Face[] detectedFaces;
         public Face[] DetectedFaces
@@ -471,47 +457,6 @@ namespace CognitiveServicesPlayground
             set => SetProperty(ref isBusy, value);
         }
 
-        private async void OnApplyFaceApiKey(object sender, RoutedEventArgs e)
-        {
-            await InitializeServiceAsync();
-            if (PersonGroups == null)
-            {
-                return;
-            }
 
-            var dialog = new MessageDialog("Excellent, do you want to save this key for future use?", "Face API Key applied");
-            dialog.Commands.Add(new UICommand("Yes") { Id = 0 });
-            dialog.Commands.Add(new UICommand("No") { Id = 1 });
-            var result = await dialog.ShowAsync();
-            if ((int)result.Id == 0)
-            {
-                await SaveKeyAsync(MicrosoftCognitiveServicesFaceKey);
-            }
-
-            if (PersonGroups.Length > 0)
-            {
-                await new MessageDialog("Great, now check your existing groups on the left.", "Face API Key applied").ShowAsync();
-            }
-            else
-            {
-                await new MessageDialog("Great, you can now start adding person groups.", "Face API Key applied").ShowAsync();
-            }
-        }
-
-        private static async Task SaveKeyAsync(string key)
-        {
-            var file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync("faceapikey.txt", CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteTextAsync(file, key);
-        }
-
-        private static async Task<string> LoadKeyAsync()
-        {
-            var file = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync("faceapikey.txt");
-            if (file != null)
-            {
-                return await FileIO.ReadTextAsync((StorageFile)file);
-            }
-            return null;
-        }
     }
 }

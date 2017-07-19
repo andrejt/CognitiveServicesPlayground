@@ -96,6 +96,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BindablePage.cs" />
+    <Compile Include="ComputerVisionPage.xaml.cs">
+      <DependentUpon>ComputerVisionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="FacePage.xaml.cs">
       <DependentUpon>FacePage.xaml</DependentUpon>
@@ -103,6 +106,7 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NavigationItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +130,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="ComputerVisionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FacePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -141,6 +149,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.ProjectOxford.Face">
       <Version>1.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectOxford.Vision">
+      <Version>1.0.393</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

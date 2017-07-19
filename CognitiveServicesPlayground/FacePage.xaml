@@ -19,11 +19,6 @@
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Margin="10,0">
-            <TextBlock Text="Enter Face API Key" VerticalAlignment="Center"/>
-            <PasswordBox Password="{x:Bind MicrosoftCognitiveServicesFaceKey, Mode=TwoWay}" Width="300" Margin="10,0"/>
-            <Button Content="Apply API key" Click="OnApplyFaceApiKey"/>
-        </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
             <Button Content="Open image" Click="OnOpenImage" />
         </StackPanel>

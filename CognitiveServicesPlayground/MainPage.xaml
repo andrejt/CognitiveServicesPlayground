@@ -1,4 +1,4 @@
-﻿<Page
+﻿<local:BindablePage
     x:Class="CognitiveServicesPlayground.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,11 +8,32 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <SplitView IsPaneOpen="False" DisplayMode="Inline">
+        <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="100">
             <SplitView.Pane>
-                <ListView />
+                <ListView ItemsSource="{x:Bind NavigationItems}"
+                          SelectedItem="{x:Bind SelectedNavigationItem, Mode=TwoWay}"
+                          DisplayMemberPath="Title">
+                </ListView>
             </SplitView.Pane>
-            <Frame SourcePageType="local:FacePage" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="10,0" HorizontalAlignment="Right">
+                    <TextBlock Text="Face API Key" VerticalAlignment="Center"/>
+                    <PasswordBox Password="{x:Bind MicrosoftCognitiveServicesVisionKey, Mode=TwoWay}" Width="300" Margin="10,0"/>
+                    <Button Content="Apply" Click="OnApplyComputerVisionApiKey"/>
+
+                    <TextBlock Text="Vision API Key" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <PasswordBox Password="{x:Bind MicrosoftCognitiveServicesFaceKey, Mode=TwoWay}" Width="300" Margin="10,0"/>
+                    <Button Content="Apply" Click="OnApplyFaceApiKey"/>
+                </StackPanel>
+                <Frame x:Name="RootFrame" SourcePageType="{x:Bind SelectedNavigationItem.PageType, Mode=OneWay}" 
+                        Navigated="OnNavigated"
+                       VerticalContentAlignment="Stretch"
+                       Grid.Row="1"/>
+            </Grid>
         </SplitView>
     </Grid>
-</Page>
+</local:BindablePage>
